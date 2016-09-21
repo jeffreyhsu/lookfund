@@ -10,4 +10,4 @@ Object.keys(mongoskin).forEach(function(key) {
 });
 Bluebird.promisifyAll(mongoskin);
 
-module.exports = mongoskin
+export {mongoskin};

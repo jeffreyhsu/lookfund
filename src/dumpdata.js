@@ -2,13 +2,15 @@
 
 const charset = require('superagent-charset');
 const sa = require('superagent');
-var superagentPromisePlugin = require('superagent-promise-plugin');
+const superagentPromisePlugin = require('superagent-promise-plugin');
 superagentPromisePlugin.Promise = require('es6-promise');
+
 charset(sa);
-var cheerio = require('cheerio')
-var moment = require('moment')
-var math = require('mathjs')
-var co = require('co')
+
+const cheerio = require('cheerio')
+const moment = require('moment')
+const math = require('mathjs')
+const co = require('co')
 
 var vm = require('vm')
 
@@ -20,8 +22,8 @@ function normalizeData(date, unit_net_value, acc_net_value, increase_rate, subsc
 
   return {
     'date': moment(date).toDate(),
-    'unit_net_value': parseFloat(unit_net_value),
-    'acc_net_value': parseFloat(acc_net_value),
+    'unit_net_value': Number.parseFloat(unit_net_value),
+    'acc_net_value': Number.parseFloat(acc_net_value),
     'increase_rate': increase_rate,
     'subscribe_status': STATUS_MAP[subscribe_status] || subscribe_status,
     'redeem_status': STATUS_MAP[redeem_status] || redeem_status,
@@ -37,14 +39,16 @@ db.bind('tickets')
 
 var start = async() => {
   try {
-
+    let fundList = await fetchFundList();
+    console.log(fundList.length)
     let fundItems = await db.funds.find({}).toArrayAsync()
-    for (let i = 0, len = fundItems.length; i < len; i++) {
-      let f = fundItems[i]
-      let detail = await fetchFundDetail(f.code)
-      await db.funds.findOneAndUpdateAsync({code:f.code}, {$set: detail })
-      console.log(detail)
-    }
+    console.log(fundItems)
+    // for (let i = 0, len = fundItems.length; i < len; i++) {
+    //   let f = fundItems[i]
+    //   let detail = await fetchFundDetail(f.code)
+    //   // await db.funds.findOneAndUpdateAsync({code:f.code}, {$set: detail })
+    //   console.log(detail)
+    // }
 
     // let detail = await fetchFundDetail('000206')
     // console.log(detail)
@@ -66,7 +70,7 @@ var start = async() => {
     //   }
     // }
 
-    db.close()
+    // db.close()
   } catch (e) {
     console.error(e)
   }
@@ -175,8 +179,8 @@ function fetchFundList() {
           fundList.push({
             'code': n[0].trim(),
             'name': n[1].trim(),
-            'fee': parseFloat(n[20].trim()) / 100 || defaultFee,
-            'fee_tiantian': parseFloat(n[17].trim()) / 100 || (defaultFee / 10),
+            'fee': Number.parseFloat(n[20].trim()) / 100 || defaultFee,
+            'fee_tiantian': Number.parseFloat(n[17].trim()) / 100 || (defaultFee / 10),
             'available': !_.isEmpty(n[3])
           })
         })
