@@ -9,5 +9,4 @@ Object.keys(mongoskin).forEach(function(key) {
   }
 });
 Bluebird.promisifyAll(mongoskin);
-
-export {mongoskin};
+module.exports = mongoskin;
